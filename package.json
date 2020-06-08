@@ -1,0 +1,59 @@
+{
+  "name": "@nodebug/visual",
+  "version": "0.0.1",
+  "author": {
+    "name": "Node Bug",
+    "email": "nodebug@outlook.com"
+  },
+  "bugs": {
+    "url": "https://github.com/node-bug/visual/issues"
+  },
+  "dependencies": {
+    "@nodebug/logger": "1.0.0",
+    "rc": "^1.2.8"
+  },
+  "description": "helper for performing visual comparisons with selenium test automation",
+  "homepage": "https://github.com/node-bug/visual#readme",
+  "keywords": [
+    "visual",
+    "comparison",
+    "resemble",
+    "selenium",
+    "automation",
+    "test",
+    "capture",
+    "compare",
+    "selectors"
+  ],
+  "license": "MPL-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thomasashwindsilva/visual.git"
+  },
+  "scripts": {
+    "test": "npm run test"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-prettier": "^3.1.3",
+    "husky": "4.2.5",
+    "lint-staged": "10.1.5",
+    "prettier": "^2.0.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ],
+    "*.{json,yaml,yml,md,sh,groovy}": [
+      "prettier --write"
+    ]
+  }
+}
