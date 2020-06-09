@@ -1,3 +1,25 @@
+const fs = require('fs')
+const { log } = require('@nodebug/logger')
+const selenium = require('./selenium')
+
+async function capture(driver, paths) {
+    const image = selenium.takeScreenshot(driver);
+    
+    try{
+        fs.writeFileSync(string, image, 'base64')
+        log.info(`Screenshot saved at path ${string}`)
+        return 'passed'
+      } catch (err) {
+        log.info(`Could not save screenshot at path ${string}`)
+        log.error(err.stack)
+        return 'error'
+      }
+}
+
+module.exports = {
+  capture,
+}
+
 // const compareImages = require('resemblejs/compareImages')
 // const imagemin = require('imagemin')
 // const imageminPngquant = require('imagemin-pngquant')
