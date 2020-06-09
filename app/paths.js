@@ -1,27 +1,28 @@
-// const config = require('./app/config')
-// const path = require('path');
+const path = require('path')
+const fs = require('fs')
+const config = require('./config')
 
-// function paths(p, n) {
-//   const r = {}
-//   const home = p
-//   const name = n.replace(/ /g, '_')
-//   r.folder = path.resolve(`${home}/${name}/`)
+function paths(p, n) {
+  const r = {}
+  const home = p
+  const name = n.replace(/ /g, '_')
+  r.folder = path.resolve(`${home}/${name}/`)
 
-//   if (config.compare) {
-//     r.capture = path.resolve(`./reports/visual/${name}/actual/`)
-//     r.compare = path.resolve(`./reports/visual/${name}/expected/`)
-//     r.diff = path.resolve(`./reports/visual/${name}/diff/`)
-//   }
+  if (config.compare) {
+    r.capture = path.resolve(`./reports/visual/${name}/actual/`)
+    r.compare = path.resolve(`./reports/visual/${name}/expected/`)
+    r.diff = path.resolve(`./reports/visual/${name}/diff/`)
+  }
 
-//   Object.values(r).forEach((string) => {
-//     if (!fs.existsSync(string)) {
-//       fs.mkdirSync(string, { recursive: true })
-//     }
-//   })
+  Object.values(r).forEach((string) => {
+    if (!fs.existsSync(string)) {
+      fs.mkdirSync(string, { recursive: true })
+    }
+  })
 
-//   return r
-// }
+  return r
+}
 
-// module.exports = {
-//   paths
-// }
+module.exports = {
+  paths,
+}
