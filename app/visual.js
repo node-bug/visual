@@ -1,25 +1,3 @@
-const fs = require('fs')
-const { log } = require('@nodebug/logger')
-const selenium = require('./selenium')
-
-async function capture(driver, paths) {
-    const image = selenium.takeScreenshot(driver);
-    
-    try{
-        fs.writeFileSync(string, image, 'base64')
-        log.info(`Screenshot saved at path ${string}`)
-        return 'passed'
-      } catch (err) {
-        log.info(`Could not save screenshot at path ${string}`)
-        log.error(err.stack)
-        return 'error'
-      }
-}
-
-module.exports = {
-  capture,
-}
-
 // const compareImages = require('resemblejs/compareImages')
 // const imagemin = require('imagemin')
 // const imageminPngquant = require('imagemin-pngquant')
@@ -34,62 +12,6 @@ module.exports = {
 //     my.filename = null
 //     my.hidden = []
 
-//     my.getFilename = async () => {
-//       const browser = (await my.driver.getCapabilities()).getBrowserName()
-//       const rect = await my.driver.manage().window().getRect()
-//       const size = `${rect.width}x${rect.height}`
-//       return `${browser}_${size}.png`
-//     }
-
-//     my.screenshot = async (string) => {
-//       try {
-//         await my.driver.wait(() =>
-//           my.driver.executeScript('return document.readyState == "complete"'),
-//         )
-//         const image = (
-//           await imagemin.buffer(
-//             Buffer.from(await my.driver.takeScreenshot(), 'base64'),
-//             {
-//               plugins: [
-//                 imageminPngquant({
-//                   quality: [0.1, 0.4],
-//                 }),
-//               ],
-//             },
-//           )
-//         ).toString('base64')
-//         fs.writeFileSync(string, image, 'base64')
-//         log.info(`Screenshot saved at path ${string}`)
-//         return 'passed'
-//       } catch (err) {
-//         log.info(`Could not save screenshot at path ${string}`)
-//         log.error(err.stack)
-//         return 'error'
-//       }
-//     }
-
-//     my.hideSelectors = async () => {
-//       selectors.hideSelectors.forEach(async (selector) => {
-//         const elements = await my.driver.findElements(getBy(selector))
-//         elements.forEach((element) => {
-//           my.hidden.push(element)
-//           my.driver.executeScript('return arguments[0].style.opacity=0', element)
-//         })
-//       })
-//       await my.driver.wait(() =>
-//         my.driver.executeScript('return document.readyState == "complete"'),
-//       )
-//     }
-
-//     my.unhideSelectors = async () => {
-//       log.debug(`Unhiding all previously hidden elements on page.`)
-//       my.hidden.forEach((element) => {
-//         my.driver.executeScript('return arguments[0].style.opacity=1', element)
-//       })
-//       await my.driver.wait(() =>
-//         my.driver.executeScript('return document.readyState == "complete"'),
-//       )
-//     }
 
 //     my.capture = async (string) => {
 //       log.debug(`Starting to hide elements on page before screenshot.`)

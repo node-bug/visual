@@ -1,24 +1,61 @@
 const { log } = require('@nodebug/logger')
 const config = require('./app/config')
-const Files = require('./app/files').Files
-const visual = require('./app/visual')
-const selenium = require('./app/selenium').Driver
+const Files = require('./app/files')
+const Driver = require('./app/selenium')
+const resemble = require('resemblejs/compareImages')
+const that = {}
 
-log.debug(JSON.stringify(config))
-const that = {};
-
-function VisualObject(driver, path, name){
-    const meta = new Driver(driver);
-    const files = new Files(path, name);
+async function VisualObject(browser, path, test){
+    const driver = new Driver(browser);
+    const name = `${await driver.browserName}_${await driver.size}.png`
+    const files = new Files(path, test, name);
 
     if(config.capture === true){
-        that.status = visual.capture(driver, paths);
+       driver.takeScreenshot().then(image => 
+        files.saveExpected(image)
+       )
     }
-    if(config.compare === true){
 
+    that.comparison = async () => {
+      if(config.compare === true){
+        //copy files to expected
+        files.copyExpected()
+        const image = await driver.takeScreenshot()
+        await files.saveActual(image)
+        const resemble = await compare();
+        files.saveDiff(resemble.getBuffer())
+
+        if (resemble.misMatchPercentage > 0.01) {
+          that.buffer = resemble.getBuffer()
+          that.misMatchPercentage = resemble.misMatchPercentage
+          that.status = 'failed'
+            log.info(
+              `Actual and expected images mismatch by ${resemble.misMatchPercentage}%`,
+            )
+          } else {
+            log.info('Actual and expected images match.')
+            that.status = 'passed'
+        }
+      } else {
+        log.info(
+          'Not comparing as Compare flag is set to false in config file.'
+        )
+      }
+      return that.status
     }
+
+    function compare() {
+        try {
+          log.debug(`Comparing image at path ${files.expected} with ${files.actual}`)
+          return resemble(files.expected, files.actual)
+        } catch (err) {
+          log.info(`Could not compare screenshots due to error.`)
+          log.error(err.stack)
+          throw err
+        }
+      }
+
+    return that
 }
 
-module.exports = {
-    VisualObject
-}
+module.exports = VisualObject

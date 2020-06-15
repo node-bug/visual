@@ -1,26 +1,72 @@
 const path = require('path')
 const fs = require('fs')
 const config = require('./config')
+const {log} = require('@nodebug/logger')
+const that = {}
 
-function Files (folder, name) {
-  const r = {}
-  r.home = path.resolve(`${folder}/${name}`)
+const this
+
+function Files (folder, test, file) {
+  const paths = {}
+  paths.expected = path.resolve(`${folder}/${test}/`)
 
   if (config.compare) {
-    r.capture = path.resolve(`./reports/visual/${name}/actual/`)
-    r.compare = path.resolve(`./reports/visual/${name}/expected/`)
-    r.diff = path.resolve(`./reports/visual/${name}/diff/`)
+    paths.capture = path.resolve(`./reports/visual/${test}/actual/`)
+    paths.compare = path.resolve(`./reports/visual/${test}/expected/`)
+    paths.diff = path.resolve(`./reports/visual/${test}/diff/`)
   }
 
-  Object.values(r).forEach((string) => {
+  Object.values(paths).forEach((string) => {
     if (!fs.existsSync(string)) {
       fs.mkdirSync(string, { recursive: true })
     }
   })
 
-  return r
+  function saveImage(image, filepath){
+    try{
+      fs.writeFileSync(filepath, image, 'base64')
+      log.info(`Screenshot saved at path ${filepath}`)
+      return true
+    } catch(err){
+      log.error(`Error while saving file at path ${filepath}`)
+      log.error(err.stack)
+      throw err
+    }
+  }
+
+  that.expected = paths.expected + "/" +file
+  that.capture = paths.capture +  "/" +file
+  that.actual = paths.compare +  "/" +file
+  that.diff = paths.diff +  "/" +file
+
+  that.saveExpected = async (image) => {
+    return saveImage(image, that.expected)
+  }
+
+  that.saveActual = async (image) => {
+    return saveImage(image, that.actual)
+  }
+
+  that.saveDiff = async (image) => {
+    return saveImage(image, that.diff)
+  }
+
+  that.copyExpected = async () => {
+    if(fs.existsSync(that.expected)){
+      fs.copyFile(that.expected, that.capture, (err) => {
+        if (err) {
+          log.error(`Error while copying ${that.expected} to ${that.capture}.`)
+          throw err
+        };
+      });
+    } else {
+      log.error(`Capture screenshot not found at path ${that.expected}. Please run capture mode.`)
+      return false
+    }
+    return true
+  }
+  
+  return that
 }
 
-module.exports = {
-  Files
-}
+module.exports = Files
