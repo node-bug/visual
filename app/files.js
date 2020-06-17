@@ -21,6 +21,8 @@ function Files(folder, test, file) {
     }
   })
 
+  that.selectors = `${paths.expected}/selectors.yaml`
+
   function saveImage(image, filepath) {
     try {
       fs.writeFileSync(filepath, image, 'base64')
@@ -38,26 +40,21 @@ function Files(folder, test, file) {
   that.actual = `${paths.compare}/${file}`
   that.diff = `${paths.diff}/${file}`
 
-  that.saveExpected = async (image) => {
-    return saveImage(image, that.expected)
-  }
+  that.saveExpected = async (image) => saveImage(image, that.expected)
 
-  that.saveActual = async (image) => {
-    return saveImage(image, that.actual)
-  }
+  that.saveActual = async (image) => saveImage(image, that.actual)
 
-  that.saveDiff = async (image) => {
-    return saveImage(image, that.diff)
-  }
+  that.saveDiff = async (image) => saveImage(image, that.diff)
 
   that.copyExpected = async () => {
     if (fs.existsSync(that.expected)) {
-      fs.copyFile(that.expected, that.capture, (err) => {
-        if (err) {
-          log.error(`Error while copying ${that.expected} to ${that.capture}.`)
-          throw err
-        }
-      })
+      try {
+        fs.copyFileSync(that.expected, that.capture)
+      } catch (err) {
+        log.error(`Error while copying ${that.expected} to ${that.capture}.`)
+        log.error(err.stack)
+        throw err
+      }
     } else {
       log.error(
         `Capture screenshot not found at path ${that.expected}. Please run capture mode.`,

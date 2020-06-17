@@ -2,18 +2,23 @@ const { log } = require('@nodebug/logger')
 const resemble = require('resemblejs/compareImages')
 const config = require('./app/config')
 const Files = require('./app/files')
-const Driver = require('./app/selenium')
+const Selenium = require('./app/selenium')
+const Selectors = require('./app/selectors')
 
 const that = {}
 
 async function VisualObject(browser, path, test) {
-  const driver = new Driver(browser)
-  const name = `${await driver.browserName}_${await driver.size}.png`
+  const selenium = new Selenium(browser)
+  const name = `${await selenium.browserName}_${await selenium.size}.png`
   const files = new Files(path, test, name)
+  const selectors = new Selectors(browser, files.selectors)
 
   if (config.capture === true) {
-    const image = await driver.takeScreenshot()
-    await files.saveExpected(image)
+    await selectors.update()
+    const image = await selenium.takeScreenshot()
+    await selectors.reset()
+
+    files.saveExpected(image)
   }
 
   function compare() {
@@ -33,7 +38,11 @@ async function VisualObject(browser, path, test) {
     if (config.compare === true) {
       // copy files to expected
       files.copyExpected()
-      const image = await driver.takeScreenshot()
+
+      await selectors.update()
+      const image = await selenium.takeScreenshot()
+      await selectors.reset()
+
       await files.saveActual(image)
       const result = await compare()
       files.saveDiff(result.getBuffer())
