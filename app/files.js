@@ -1,7 +1,7 @@
 const path = require('path')
 const fs = require('fs')
 const { log } = require('@nodebug/logger')
-const config = require('./config')
+const config = require('@nodebug/config')('visual')
 
 const that = {}
 

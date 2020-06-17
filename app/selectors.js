@@ -14,7 +14,7 @@ function Selectors(driver, path) {
     waitForVisibility: [],
     waitForInvisibility: [],
   }
-  
+
   function addSelectorsFile() {
     try {
       if (!fs.existsSync(my.path)) {
@@ -61,7 +61,7 @@ function Selectors(driver, path) {
   }
 
   that.reset = async () => unhideSelectors()
-  
+
   return that
 }
 

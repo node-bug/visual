@@ -1,6 +1,6 @@
 {
   "name": "@nodebug/visual",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "author": {
     "name": "Node Bug",
     "email": "nodebug@outlook.com"
@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@nodebug/logger": "1.0.0",
+    "@nodebug/config": "1.0.0",
     "js-yaml": "^3.14.0",
-    "rc": "^1.2.8",
     "resemblejs": "^3.2.4",
     "selenium-webdriver": "^4.0.0-alpha.7"
   },

@@ -1,6 +1,6 @@
 const { log } = require('@nodebug/logger')
 const resemble = require('resemblejs/compareImages')
-const config = require('./app/config')
+const config = require('@nodebug/config')('visual')
 const Files = require('./app/files')
 const Selenium = require('./app/selenium')
 const Selectors = require('./app/selectors')
