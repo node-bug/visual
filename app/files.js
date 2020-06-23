@@ -59,7 +59,9 @@ function Files(folder, test, file) {
       log.error(
         `Capture screenshot not found at path ${that.expected}. Please run capture mode.`,
       )
-      return false
+      throw new ReferenceError(
+        `Capture screenshot not found at path ${that.expected}. Please run capture mode.`,
+      )
     }
     return true
   }

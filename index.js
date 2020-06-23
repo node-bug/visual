@@ -9,7 +9,7 @@ const that = {}
 
 async function VisualObject(browser, path, test) {
   const selenium = new Selenium(browser)
-  const name = `${await selenium.browserName}_${await selenium.size}.png`
+  const name = `${await selenium.os}_${await selenium.browserName}_${await selenium.size}.png`
   const files = new Files(path, test, name)
   const selectors = new Selectors(browser, files.selectors)
 
