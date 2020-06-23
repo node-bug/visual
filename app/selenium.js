@@ -7,9 +7,14 @@ function Selenium(driver) {
   my.driver = driver
 
   that.browserName = (async () =>
-    (await my.driver.getCapabilities()).browserName)()
+    (await my.driver.getCapabilities())
+      .get('browserName')
+      .replace(/\s/g, ''))()
 
-  that.os = (async () => (await my.driver.getCapabilities()).os)()
+  that.os = (async () =>
+    (await my.driver.getCapabilities())
+      .get('platformName')
+      .replace(/\s/g, ''))()
 
   that.size = (async () => {
     const rect = await my.driver.manage().window().getRect()
