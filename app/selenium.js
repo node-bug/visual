@@ -14,6 +14,16 @@ function Selenium(driver) {
       .get('platformName')
       .replace(/\s/g, ''))()
 
+  that.width = (async () => {
+    const rect = await my.driver.manage().window().getRect()
+    return rect.width
+  })()
+
+  that.height = (async () => {
+    const rect = await my.driver.manage().window().getRect()
+    return rect.height
+  })()
+
   that.size = (async () => {
     const rect = await my.driver.manage().window().getRect()
     return `${rect.width}x${rect.height}`

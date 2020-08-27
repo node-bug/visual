@@ -4,12 +4,13 @@ const config = require('@nodebug/config')('visual')
 const Files = require('./app/files')
 const Selenium = require('./app/selenium')
 const Selectors = require('./app/selectors')
+const Gif = require('./app/gif')
 
 const that = {}
 
 async function VisualObject(browser, path, test) {
   const selenium = new Selenium(browser)
-  const name = `${await selenium.os}_${await selenium.browserName}_${await selenium.size}.png`
+  const name = `${await selenium.os}_${await selenium.browserName}_${await selenium.size}`
   const files = new Files(path, test, name)
   const selectors = new Selectors(browser, files.selectors)
 
@@ -17,7 +18,6 @@ async function VisualObject(browser, path, test) {
     await selectors.update()
     const image = await selenium.takeScreenshot()
     await selectors.reset()
-
     files.saveExpected(image)
   }
 
@@ -35,20 +35,18 @@ async function VisualObject(browser, path, test) {
   }
 
   that.comparison = async () => {
-    if (config.compare === true) {
-      // copy files to expected
-      files.copyExpected()
-
+    if (config.compare === true && files.expectedExists()) {
       await selectors.update()
       const image = await selenium.takeScreenshot()
       await selectors.reset()
-
       await files.saveActual(image)
+
       const result = await compare()
-      files.saveDiff(result.getBuffer())
 
       if (result.misMatchPercentage > 0.01) {
-        that.buffer = result.getBuffer()
+        const gif = new Gif(await selenium.width, await selenium.height)
+        await gif.addImages([files.expected, files.actual])
+        that.buffer = await gif.save(files.diff)
         that.misMatchPercentage = result.misMatchPercentage
         that.status = 'failed'
         log.info(

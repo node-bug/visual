@@ -10,8 +10,7 @@ function Files(folder, test, file) {
   paths.expected = path.resolve(`${folder}/${test}/`)
 
   if (config.compare) {
-    paths.capture = path.resolve(`./reports/visual/${test}/actual/`)
-    paths.compare = path.resolve(`./reports/visual/${test}/expected/`)
+    paths.actual = path.resolve(`./reports/visual/${test}/actual/`)
     paths.diff = path.resolve(`./reports/visual/${test}/diff/`)
   }
 
@@ -35,10 +34,9 @@ function Files(folder, test, file) {
     }
   }
 
-  that.expected = `${paths.expected}/${file}`
-  that.capture = `${paths.capture}/${file}`
-  that.actual = `${paths.compare}/${file}`
-  that.diff = `${paths.diff}/${file}`
+  that.expected = `${paths.expected}/${file}.png`
+  that.actual = `${paths.actual}/${file}.png`
+  that.diff = `${paths.diff}/${file}.gif`
 
   that.saveExpected = async (image) => saveImage(image, that.expected)
 
@@ -46,16 +44,8 @@ function Files(folder, test, file) {
 
   that.saveDiff = async (image) => saveImage(image, that.diff)
 
-  that.copyExpected = async () => {
-    if (fs.existsSync(that.expected)) {
-      try {
-        fs.copyFileSync(that.expected, that.capture)
-      } catch (err) {
-        log.error(`Error while copying ${that.expected} to ${that.capture}.`)
-        log.error(err.stack)
-        throw err
-      }
-    } else {
+  that.expectedExists = async () => {
+    if (!fs.existsSync(that.expected)) {
       log.error(
         `Capture screenshot not found at path ${that.expected}. Please run capture mode.`,
       )
