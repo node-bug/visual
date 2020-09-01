@@ -94,25 +94,26 @@ function WebElement(driver, element) {
         ),
       )
 
-  that.isPresent = async (timeout) =>
-    my.driver.wait(until.elementsLocated(my.definition), timeout)
+  that.isPresent = async (timeout) => {
+    const condition = until.elementLocated(my.definition)
+    return my.driver.wait(() => condition.fn(my.driver), timeout)
+  }
 
-  that.isNotPresent = async (timeout) =>
-    my.driver.wait(
-      new Condition(
-        `for 0 elements to be located By(${my.byType}, ${my.definition})`,
-        // eslint-disable-next-line func-names
-        async function () {
-          try {
-            await that.isPresent(1000)
-          } catch (ex) {
-            return true
-          }
-          return false
-        },
-      ),
-      timeout,
+  that.isNotPresent = async (timeout) => {
+    const condition = new Condition(
+      `for 0 elements to be located By(${my.byType}, ${my.definition})`,
+      // eslint-disable-next-line func-names
+      async function () {
+        try {
+          await that.isPresent(1000)
+        } catch (ex) {
+          return true
+        }
+        return false
+      },
     )
+    return my.driver.wait(() => condition.fn(my.driver), timeout)
+  }
 
   return that
 }
