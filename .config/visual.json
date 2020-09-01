@@ -1,4 +1,4 @@
 {
-  "capture": false,
-  "compare": false
+  "capture": true,
+  "compare": true
 }

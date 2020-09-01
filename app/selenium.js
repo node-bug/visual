@@ -1,34 +1,49 @@
-const fs = require('fs')
 const { log } = require('@nodebug/logger')
 
-async function takeScreenshot(driver, path) {
-  try {
-    await driver.wait(() =>
-      driver.executeScript('return document.readyState == "complete"'),
-    )
-    // const image = (
-    //   await imagemin.buffer(
-    //     Buffer.from(await driver.takeScreenshot(), 'base64'),
-    //     {
-    //       plugins: [
-    //         imageminPngquant({
-    //           quality: [0.1, 0.4],
-    //         }),
-    //       ],
-    //     },
-    //   )
-    // ).toString('base64');
-    const image = await driver.takeScreenshot()
-    fs.writeFileSync(path, image, 'base64')
-    log.info(`Screenshot saved at path ${path}`)
-    return 'passed'
-  } catch (err) {
-    log.info(`Could not save screenshot at path ${path}`)
-    log.error(err.stack)
-    return 'error'
+const that = {}
+
+function Selenium(driver) {
+  const my = {}
+  my.driver = driver
+
+  that.browserName = (async () =>
+    (await my.driver.getCapabilities()).get('browserName').replace(/\s/g, ''))()
+
+  that.os = (async () =>
+    (await my.driver.getCapabilities())
+      .get('platformName')
+      .replace(/\s/g, ''))()
+
+  that.width = (async () => {
+    const rect = await my.driver.manage().window().getRect()
+    return rect.width
+  })()
+
+  that.height = (async () => {
+    const rect = await my.driver.manage().window().getRect()
+    return rect.height
+  })()
+
+  that.size = (async () => {
+    const rect = await my.driver.manage().window().getRect()
+    return `${rect.width}x${rect.height}`
+  })()
+
+  that.takeScreenshot = async () => {
+    try {
+      await my.driver.wait(() =>
+        my.driver.executeScript('return document.readyState == "complete"'),
+      )
+      const image = await my.driver.takeScreenshot()
+      return image
+    } catch (err) {
+      log.error(`Error while taking screenshot.`)
+      log.error(err.stack)
+      throw err
+    }
   }
+
+  return that
 }
 
-module.exports = {
-  takeScreenshot,
-}
+module.exports = Selenium

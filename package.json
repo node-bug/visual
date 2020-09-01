@@ -1,6 +1,6 @@
 {
   "name": "@nodebug/visual",
-  "version": "0.0.1",
+  "version": "0.0.9",
   "author": {
     "name": "Node Bug",
     "email": "nodebug@outlook.com"
@@ -9,9 +9,13 @@
     "url": "https://github.com/node-bug/visual/issues"
   },
   "dependencies": {
+    "@nodebug/config": "1.0.0",
     "@nodebug/logger": "1.0.0",
-    "rc": "^1.2.8",
-    "resemblejs": "^3.2.4"
+    "canvas": "^2.6.1",
+    "gifencoder": "^2.0.1",
+    "js-yaml": "^3.14.0",
+    "resemblejs": "^3.2.4",
+    "selenium-webdriver": "latest"
   },
   "description": "helper for performing visual comparisons with selenium test automation",
   "homepage": "https://github.com/node-bug/visual#readme",
