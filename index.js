@@ -21,8 +21,7 @@ async function VisualObject(browser, path, test) {
     ])
     await selectors.hideSelectors()
     const image = await selenium.takeScreenshot()
-    await selectors.unhideSelectors()
-    files.saveExpected(image)
+    await Promise.all([selectors.unhideSelectors(), files.saveExpected(image)])
   }
 
   function compare() {
@@ -46,8 +45,7 @@ async function VisualObject(browser, path, test) {
       ])
       await selectors.hideSelectors()
       const image = await selenium.takeScreenshot()
-      await selectors.unhideSelectors()
-      await files.saveActual(image)
+      await Promise.all([selectors.unhideSelectors(), files.saveActual(image)])
 
       const result = await compare()
 

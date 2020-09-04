@@ -32,11 +32,11 @@ function Selectors(driver, path) {
   }
   addSelectorsFile()
 
-  that.hideSelectors = async function () {
+  that.hideSelectors = async () => {
     await Promise.all(
       my.content.hide.map(async (element) => {
         const Element = new WebElement(my.driver, element)
-        log.debug(`Unhiding element ${element.name} on the page`)
+        log.debug(`Hiding element ${element.name} on the page`)
         return Element.hide()
       }),
     )
@@ -45,7 +45,7 @@ function Selectors(driver, path) {
     )
   }
 
-  that.unhideSelectors = async function () {
+  that.unhideSelectors = async () => {
     await Promise.all(
       my.content.hide.map(async (element) => {
         const Element = new WebElement(my.driver, element)
@@ -115,23 +115,21 @@ function Selectors(driver, path) {
   }
 
   that.waitForInvisibility = async () => {
-    // eslint-disable-next-line func-names
-    await Promise.all(
-      my.content.waitForInvisibility.map(async (element) => {
-        try {
-          await genericAssertElement({
-            condition: 'not present',
-            element,
-          })
-        } catch (err) {
-          log.info(
-            `Element ${element.name} present on page after ${element.timeout} second wait`,
-          )
-          throw err
-        }
-        return true
-      }),
-    )
+    // eslint-disable-next-line no-restricted-syntax
+    for (const element of my.content.waitForInvisibility) {
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        await genericAssertElement({
+          condition: 'not present',
+          element,
+        })
+      } catch (err) {
+        log.info(
+          `Element ${element.name} present on page after ${element.timeout} second wait`,
+        )
+        throw err
+      }
+    }
   }
 
   return that
