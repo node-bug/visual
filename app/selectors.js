@@ -36,7 +36,7 @@ function Selectors(driver, path) {
     await Promise.all(
       my.content.hide.map(async (element) => {
         const Element = new WebElement(my.driver, element)
-        log.debug(`Unhiding element ${element.name} on the page`)
+        log.debug(`Hiding element ${element.name} on the page`)
         return Element.hide()
       }),
     )
