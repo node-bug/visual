@@ -32,12 +32,21 @@ function Selectors(driver, path) {
   }
   addSelectorsFile()
 
+  async function switchFrame(frame) {
+    if ([undefined, null, '', 'NA', 'na', 'N/A'].includes(frame)) {
+      return my.driver.switchTo().defaultContent()
+    }
+    return my.driver.switchTo().frame(frame)
+  }
+
   that.hideSelectors = async () => {
     await Promise.all(
       my.content.hide.map(async (element) => {
         const Element = new WebElement(my.driver, element)
         log.debug(`Hiding element ${element.name} on the page`)
-        return Element.hide()
+        await switchFrame(element.frame)
+        await Element.hide()
+        return switchFrame()
       }),
     )
     return my.driver.wait(() =>
@@ -50,7 +59,9 @@ function Selectors(driver, path) {
       my.content.hide.map(async (element) => {
         const Element = new WebElement(my.driver, element)
         log.debug(`Unhiding element ${element.name} on the page`)
-        return Element.unhide()
+        await switchFrame(element.frame)
+        await Element.unhide()
+        return switchFrame()
       }),
     )
     return my.driver.wait(() =>
@@ -61,12 +72,13 @@ function Selectors(driver, path) {
   async function genericAssertElement(p) {
     const timeout = p.element.timeout * 1000
     const { implicit } = await my.driver.manage().getTimeouts()
-    await my.driver.manage().setTimeouts({ implicit: 1000 })
 
     let status
     const WebElementObject = new WebElement(my.driver, p.element)
     log.info(`Waiting for ${p.element.name} to be ${p.condition}`)
 
+    await switchFrame(p.element.frame)
+    await my.driver.manage().setTimeouts({ implicit: 1000 })
     try {
       switch (p.condition.toLowerCase()) {
         case 'disabled':
@@ -89,6 +101,7 @@ function Selectors(driver, path) {
       }
     } finally {
       await my.driver.manage().setTimeouts({ implicit })
+      await switchFrame()
     }
 
     return status
