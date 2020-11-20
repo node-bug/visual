@@ -1,6 +1,7 @@
 const fs = require('fs')
 const yaml = require('js-yaml')
 const { log } = require('@nodebug/logger')
+const { By } = require('selenium-webdriver')
 const WebElement = require('./WebElement')
 
 const that = {}
@@ -33,37 +34,44 @@ function Selectors(driver, path) {
   addSelectorsFile()
 
   async function switchFrame(frame) {
-    if ([undefined, null, '', 'NA', 'na', 'N/A'].includes(frame)) {
-      return my.driver.switchTo().defaultContent()
+    await my.driver.switchTo().defaultContent()
+    if (![undefined, null, '', 'NA', 'na', 'n/a', 'N/A'].includes(frame)) {
+      if (typeof frame === 'number') {
+        return my.driver.switchTo().frame(frame)
+      }
+      const webElement = await my.driver.findElement(
+        By.xpath(`//*[@id='${frame}']`),
+      )
+      return my.driver.switchTo().frame(webElement)
     }
-    return my.driver.switchTo().frame(frame)
+    return false
   }
 
   that.hideSelectors = async () => {
-    await Promise.all(
-      my.content.hide.map(async (element) => {
-        const Element = new WebElement(my.driver, element)
-        log.debug(`Hiding element ${element.name} on the page`)
-        await switchFrame(element.frame)
-        await Element.hide()
-        return switchFrame()
-      }),
-    )
+    // eslint-disable-next-line no-restricted-syntax
+    for (const element of my.content.hide) {
+      /* eslint-disable no-await-in-loop */
+      const Element = new WebElement(my.driver, element)
+      log.debug(`Hiding element ${element.name} on the page`)
+      await switchFrame(element.frame)
+      await Element.hide()
+      /* eslint-enable no-await-in-loop */
+    }
     return my.driver.wait(() =>
       my.driver.executeScript('return document.readyState == "complete"'),
     )
   }
 
   that.unhideSelectors = async () => {
-    await Promise.all(
-      my.content.hide.map(async (element) => {
-        const Element = new WebElement(my.driver, element)
-        log.debug(`Unhiding element ${element.name} on the page`)
-        await switchFrame(element.frame)
-        await Element.unhide()
-        return switchFrame()
-      }),
-    )
+    // eslint-disable-next-line no-restricted-syntax
+    for (const element of my.content.hide) {
+      /* eslint-disable no-await-in-loop */
+      const Element = new WebElement(my.driver, element)
+      log.debug(`Unhiding element ${element.name} on the page`)
+      await switchFrame(element.frame)
+      await Element.unhide()
+      /* eslint-enable no-await-in-loop */
+    }
     return my.driver.wait(() =>
       my.driver.executeScript('return document.readyState == "complete"'),
     )
@@ -101,30 +109,28 @@ function Selectors(driver, path) {
       }
     } finally {
       await my.driver.manage().setTimeouts({ implicit })
-      await switchFrame()
     }
 
     return status
   }
 
   that.waitForVisibility = async () => {
-    // eslint-disable-next-line func-names
-    await Promise.all(
-      my.content.waitForVisibility.map(async (element) => {
-        try {
-          await genericAssertElement({
-            condition: 'present',
-            element,
-          })
-        } catch (err) {
-          log.info(
-            `Element ${element.name} not present on page after ${element.timeout} second wait`,
-          )
-          throw err
-        }
-        return true
-      }),
-    )
+    // eslint-disable-next-line no-restricted-syntax
+    for (const element of my.content.waitForInvisibility) {
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        await genericAssertElement({
+          condition: 'present',
+          element,
+        })
+      } catch (err) {
+        log.info(
+          `Element ${element.name} not present on page after ${element.timeout} second wait`,
+        )
+        throw err
+      }
+    }
+    return true
   }
 
   that.waitForInvisibility = async () => {
@@ -143,6 +149,7 @@ function Selectors(driver, path) {
         throw err
       }
     }
+    return true
   }
 
   return that

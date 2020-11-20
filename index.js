@@ -15,10 +15,8 @@ async function VisualObject(browser, path, test) {
   const selectors = new Selectors(browser, files.selectors)
 
   if (config.capture === true) {
-    await Promise.all([
-      selectors.waitForVisibility(),
-      selectors.waitForInvisibility(),
-    ])
+    await selectors.waitForVisibility()
+    await selectors.waitForInvisibility()
     await selectors.hideSelectors()
     const image = await selenium.takeScreenshot()
     await Promise.all([selectors.unhideSelectors(), files.saveExpected(image)])
@@ -39,10 +37,8 @@ async function VisualObject(browser, path, test) {
 
   that.comparison = async () => {
     if (config.compare === true && files.expectedExists()) {
-      await Promise.all([
-        selectors.waitForVisibility(),
-        selectors.waitForInvisibility(),
-      ])
+      await selectors.waitForVisibility()
+      await selectors.waitForInvisibility()
       await selectors.hideSelectors()
       const image = await selenium.takeScreenshot()
       await Promise.all([selectors.unhideSelectors(), files.saveActual(image)])
