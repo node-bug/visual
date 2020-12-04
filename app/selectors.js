@@ -116,7 +116,7 @@ function Selectors(driver, path) {
 
   that.waitForVisibility = async () => {
     // eslint-disable-next-line no-restricted-syntax
-    for (const element of my.content.waitForInvisibility) {
+    for (const element of my.content.waitForVisibility) {
       try {
         // eslint-disable-next-line no-await-in-loop
         await genericAssertElement({
