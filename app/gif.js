@@ -2,39 +2,67 @@ const GIFEncoder = require('gifencoder')
 const { createCanvas, Image } = require('canvas')
 const fs = require('fs')
 
-const that = {}
+class Gif {
+  /* eslint-disable no-underscore-dangle */
+  get width() {
+    return this._width
+  }
 
-function Gif(width, height) {
-  const encoder = new GIFEncoder(width, height)
-  const canvas = createCanvas(width, height)
-  encoder.start()
-  encoder.setRepeat(0)
-  encoder.setDelay(1000)
-  encoder.setQuality(10)
+  get height() {
+    return this._height
+  }
 
-  that.addImage = async function (path) {
+  get encoder() {
+    return this._encoder
+  }
+
+  get canvas() {
+    return this._canvas
+  }
+
+  constructor(width, height) {
+    this._width = width
+    this._height = height
+    this._encoder = new GIFEncoder(width, height)
+    this._canvas = createCanvas(width, height)
+
+    this._encoder.start()
+    this._encoder.setRepeat(0)
+    this._encoder.setDelay(1000)
+    this._encoder.setQuality(10)
+  }
+  /* eslint-enable no-underscore-dangle */
+
+  async addImage(path) {
     const data = fs.readFileSync(path)
     const image = new Image()
     image.src = data
-    const context = canvas.getContext('2d')
+    const context = this.canvas.getContext('2d')
     context.drawImage(image, 0, 0)
-    return encoder.addFrame(context)
+    return this.encoder.addFrame(context)
   }
 
-  that.addImages = async function (paths) {
-    paths.forEach(async (path) => {
-      await that.addImage(path)
+  async addBuffer(data) {
+    const image = new Image()
+    image.src = data
+    const context = this.canvas.getContext('2d')
+    context.drawImage(image, 0, 0)
+    return this.encoder.addFrame(context)
+  }
+
+  async addImages(paths) {
+    const promises = paths.map(async (path) => {
+      await this.addImage(path)
     })
+    return Promise.all(promises)
   }
 
-  that.save = async function (path) {
-    await encoder.finish()
-    const buffer = await encoder.out.getData()
+  async save(path) {
+    await this.encoder.finish()
+    const buffer = await this.encoder.out.getData()
     fs.writeFileSync(path, buffer, 'base64')
     return buffer
   }
-
-  return that
 }
 
 module.exports = Gif

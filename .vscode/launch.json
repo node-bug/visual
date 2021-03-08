@@ -9,8 +9,8 @@
       "type": "node",
       "request": "launch",
       "console": "integratedTerminal",
-      // "program": "${workspaceFolder}/index.js",
-      "program": "${workspaceFolder}/app/gif.js",
+      "program": "${workspaceFolder}/test.js",
+      // "program": "${workspaceFolder}/app/gif.js",
       "args": ["--NoDebug"]
     }
   ]

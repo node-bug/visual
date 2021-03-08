@@ -8,10 +8,10 @@ const Gif = require('./app/gif')
 
 const that = {}
 
-async function VisualObject(browser, path, test) {
+async function VisualObject(browser, p, test) {
   const selenium = new Selenium(browser)
   const name = `${await selenium.os}_${await selenium.browserName}_${await selenium.size}`
-  const files = new Files(path, test, name)
+  const files = new Files(p, test, name)
   const selectors = new Selectors(browser, files.selectors)
 
   if (config.capture === true) {
